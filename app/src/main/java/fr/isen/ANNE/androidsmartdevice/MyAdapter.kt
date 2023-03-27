@@ -36,6 +36,7 @@ class MyAdapter(private val dataList: ArrayList<BluetoothDevice>) : RecyclerView
                 dataList[index] = newDevice
             }
         }
+        //coucou
     }
 
 }
