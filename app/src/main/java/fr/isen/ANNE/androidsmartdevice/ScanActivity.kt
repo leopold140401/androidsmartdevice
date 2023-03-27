@@ -5,12 +5,14 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -31,101 +33,109 @@ class ScanActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
 
 
-    private lateinit var devices: MutableList<BluetoothDevice>
+    private lateinit var devices: ArrayList<BluetoothDevice>
     private lateinit var adapter: MyAdapter
 
-    val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
+    private lateinit var bluetoothLeScanner: BluetoothLeScanner
+    private var scanCallback: ScanCallback? = null
+    private val handler = Handler()
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             if (permissions.all { it.value }){
                 scanBLEDevices()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
 
         var scanTitle = findViewById<TextView>(R.id.ScanTitle)
-        scanTitle.text = "LANCER LE SCAN";
+        scanTitle.text = "LANCER LE SCAN"
 
         imageView = findViewById(R.id.play)
         var progressBar = findViewById<ProgressBar>(R.id.progressBar2)
         progressBar.isIndeterminate = false
 
-
-        imageView.setOnClickListener {
-            if (!isImageModified) {
-                scanTitle.text = "SCAN EN COURS";
-                imageView.setImageResource(R.drawable.pause)
-                progressBar.isIndeterminate = true
-                isImageModified = true
-
-
-            } else {
-                scanTitle.text = "LANCER LE SCAN";
-                imageView.setImageResource(R.drawable.play)
-                progressBar.isIndeterminate = false
-                isImageModified = false
-            }
-        }
-
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val myDataList =
-            listOf(MyData("Title 1", "Description 1"), MyData("Title 2", "Description 2"))
-        val adapter = MyAdapter(arrayListOf())
+
+        devices = arrayListOf()
+        adapter = MyAdapter(devices)
         recyclerView.adapter = adapter
 
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
-        val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.getAdapter()
+        val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
 
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
         }
 
         if (bluetoothAdapter?.isEnabled == true) {
-            scandeviceWithPermission()
-            Toast.makeText(this, "bluetooth activer", Toast.LENGTH_LONG).show()
+            bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+            Toast.makeText(this, "bluetooth activé", Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "bluetooth pas activer", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "bluetooth désactivé", Toast.LENGTH_LONG).show()
+        }
+
+        imageView.setOnClickListener {
+            if (!isImageModified) {
+                scanTitle.text = "SCAN EN COURS"
+                imageView.setImageResource(R.drawable.pause)
+                progressBar.isIndeterminate = true
+
+                scandeviceWithPermission()
+
+                isImageModified = true
+
+            } else {
+                stopScan()
+                scanTitle.text = "LANCER LE SCAN"
+                imageView.setImageResource(R.drawable.play)
+                progressBar.isIndeterminate = false
+
+                isImageModified = false
+            }
         }
     }
 
-
     private fun scandeviceWithPermission() {
-        if(allPermissionGranted())
-        {
+        if (allPermissionGranted()) {
             scanBLEDevices()
-
-        }else{
-
+        } else {
             requestPermissionLauncher.launch(getAllPermissions())
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun scanBLEDevices() {
-        val bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().bluetoothLeScanner
-
-        val scanCallback = object : ScanCallback() {
+        scanCallback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 val device = result.device
-                Log.e("coucou ","leopold")
                 if (!devices.contains(device)) {
                     devices.add(device)
                     adapter.updateDevice(device)
                     adapter.notifyDataSetChanged()
-
-
-
                 }
             }
         }
         bluetoothLeScanner.startScan(scanCallback)
-
+        val scanDuration=4000L
+        Handler().postDelayed({
+            bluetoothLeScanner.stopScan(scanCallback)
+        }, scanDuration)
     }
 
+    @SuppressLint("MissingPermission")
+    private fun stopScan() {
+        scanCallback?.let {
+            bluetoothLeScanner.stopScan(it)
+            scanCallback = null
+            devices.clear()
+            adapter.notifyDataSetChanged()
+        }
+    }
 
     private fun allPermissionGranted(): Boolean {
         val allPermissions = getAllPermissions()
@@ -133,6 +143,9 @@ class ScanActivity : AppCompatActivity() {
             ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
     }
+
+
+
 
     private fun getAllPermissions(): Array<String> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

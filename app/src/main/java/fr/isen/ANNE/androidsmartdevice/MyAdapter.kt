@@ -24,14 +24,18 @@ class MyAdapter(private val dataList: ArrayList<BluetoothDevice>) : RecyclerView
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = dataList[position]
-        holder.title.text = currentItem.name.toString()
         holder.description.text = currentItem.address
     }
 
     override fun getItemCount() = dataList.size
 
     fun updateDevice(newDevice: BluetoothDevice){
-        dataList.add(newDevice)
+        dataList.forEachIndexed {
+            index, element ->
+            if (element.address == newDevice.address){
+                dataList[index] = newDevice
+            }
+        }
     }
 
 }
