@@ -63,7 +63,7 @@ class ScanActivity : AppCompatActivity() {
         devices = arrayListOf()
         adapter = MyAdapter(devices){
             val intent = Intent(this, InterfaceActivity::class.java)
-            intent.putExtra("device_address", it.address.toString())
+            intent.putExtra("device_address", it)
             startActivity(intent)
         }
         recyclerView.adapter = adapter

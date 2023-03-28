@@ -27,9 +27,12 @@ class MyAdapter(private val dataList: ArrayList<BluetoothDevice>, var onDeviceCl
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = dataList[position]
-        holder.description.text = currentItem.address
-        holder.itemView.setOnClickListener {
-            onDeviceClickListener(dataList[position])
+
+            holder.title.text = currentItem.name ?:"inconnu"
+            holder.description.text = currentItem.address
+            holder.itemView.setOnClickListener {
+                onDeviceClickListener(dataList[position])
+
         }
     }
 
