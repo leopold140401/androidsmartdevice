@@ -2,12 +2,11 @@ package fr.isen.ANNE.androidsmartdevice
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
+import android.bluetooth.*
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -62,7 +61,11 @@ class ScanActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         devices = arrayListOf()
-        adapter = MyAdapter(devices)
+        adapter = MyAdapter(devices){
+            val intent = Intent(this, InterfaceActivity::class.java)
+            intent.putExtra("device_address", it.address.toString())
+            startActivity(intent)
+        }
         recyclerView.adapter = adapter
 
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
