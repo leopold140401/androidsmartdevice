@@ -27,14 +27,85 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/image"
+    <TextView
+        android:id="@+id/textLed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="200dp"
+        android:text="Affichage des différentes LED : "
+        android:textSize="20sp"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar3"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ImageLed"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="64dp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLed"
+        app:srcCompat="@drawable/ampoule" />
+
+    <ImageView
+        android:id="@+id/ImageLed2"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="64dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/ImageLed3"
+        app:layout_constraintStart_toEndOf="@+id/ImageLed"
+        app:layout_constraintTop_toBottomOf="@+id/textLed"
+        app:srcCompat="@drawable/ampoule" />
+
+    <ImageView
+        android:id="@+id/ImageLed3"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="32dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLed"
+        app:srcCompat="@drawable/ampoule" />
+
+    <TextView
+        android:id="@+id/textAbonnement"
+        android:layout_width="205dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Abonnez vous pour recevoir le nombre d'incrémentation"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ImageLed2" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="101dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="32dp"
+        android:text="Recevoir"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textAbonnement"
+        app:layout_constraintTop_toBottomOf="@+id/ImageLed2" />
+
+    <TextView
+        android:id="@+id/textNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Nombre : 0"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAbonnement" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

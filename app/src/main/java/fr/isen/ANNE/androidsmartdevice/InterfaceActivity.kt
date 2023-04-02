@@ -6,17 +6,31 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 
 
 class InterfaceActivity : AppCompatActivity() {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var textView: TextView
+
+    private lateinit var textLed: TextView
+
+    private lateinit var ImageLed1: ImageView
+    private lateinit var ImageLed2: ImageView
+    private lateinit var ImageLed3: ImageView
+
+    private lateinit var textAbonnement: TextView
+    private lateinit var textNombre: TextView
+
+    private lateinit var checkbox: CheckBox
+
     private var currentGatt: BluetoothGatt? = null
 
 
@@ -33,8 +47,8 @@ class InterfaceActivity : AppCompatActivity() {
         textView = findViewById(R.id.scanprocessing)
 
 
+
         textView.text = "CONNEXION A ${device?.name ?: "inconnu"}"
-        // Indiquer que la connexion BLE est en cours pendant 5 secondes
         connectBLE(device)
 
     }
@@ -42,41 +56,45 @@ class InterfaceActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun connectBLE(device: BluetoothDevice?) {
 
-
         textView.visibility = View.VISIBLE
         progressBar.visibility = View.VISIBLE
 
-        //Handler().postDelayed({
-           // textView.visibility = View.GONE
-           // progressBar.visibility = View.GONE
-       // }, 5000)
-
-        //Ui()
-
-
         currentGatt = device?.connectGatt(this, false, gattCallback)
-
 
     }
 
-    //private fun Ui(){
-
-   // }
     private val gattCallback = object : BluetoothGattCallback() {
         @SuppressLint("MissingPermission")
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             super.onConnectionStateChange(gatt, status, newState)
-            Log.d("coucou","c est moi")
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-            Log.d("coucou","c est moi encore")
-                // Connection established, now discover services
+
+                textView.visibility=View.INVISIBLE
+                progressBar.visibility=View.INVISIBLE
+
+                textLed=findViewById(R.id.textLed)
+                textLed.visibility= View.VISIBLE
+
+                ImageLed1=findViewById(R.id.ImageLed)
+                ImageLed1.visibility= View.VISIBLE
+                ImageLed2=findViewById(R.id.ImageLed2)
+                ImageLed2.visibility= View.VISIBLE
+                ImageLed3=findViewById(R.id.ImageLed3)
+                ImageLed3.visibility= View.VISIBLE
+
+                textAbonnement=findViewById(R.id.textAbonnement)
+                textAbonnement.visibility= View.VISIBLE
+
+                textNombre=findViewById(R.id.textNombre)
+                textNombre.visibility= View.VISIBLE
+
+                checkbox=findViewById(R.id.checkBox)
+                checkbox.visibility= View.VISIBLE
+
+                // Connection established
                 runOnUiThread{
                     gatt?.discoverServices()
                 }
-
-                //Ui()
-
-
             }
 
         }
@@ -100,6 +118,5 @@ class InterfaceActivity : AppCompatActivity() {
                 // handle failure to read characteristic
             }
         }
-        // add implementation for other callback methods as needed
     }
 }
